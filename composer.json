@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": "^7.2",
-        "bristol-su/api-client-interfaces": "dev-develop"
+        "bristol-su/api-client-toolkit": "dev-initial-setup"
     },
     "require-dev": {},
     "autoload": {
@@ -23,7 +23,7 @@
     "repositories": [
     	{
     	    "type": "path",
-    	    "url": "./../api-client-interfaces"
+    	    "url": "./../api-client-toolkit"
     	}
     ]
 }
