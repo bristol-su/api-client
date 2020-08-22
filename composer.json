@@ -1,29 +1,36 @@
 {
-    "name": "bristol-su/api-client",
-    "description": "An API Client for interacting with the Bristol SU Portal",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Toby Twigger",
-            "email": "tobytwigger1@gmail.com"
-        }
-    ],
-    "require": {
-        "php": "^7.2",
-        "bristol-su/api-client-toolkit": "dev-initial-setup"
+  "name": "bristol-su/api-client",
+  "description": "An API Client for interacting with the Bristol SU Portal",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Toby Twigger",
+      "email": "tobytwigger1@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "bristol-su/api-client-toolkit": "dev-initial-setup",
+    "bristol-su/control-api-client": "dev-initial-setup",
+    "guzzlehttp/guzzle": "^7.0"
+  },
+  "require-dev": {},
+  "autoload": {
+    "psr-4": {
+      "BristolSU\\ApiClient\\": "src/"
     },
-    "require-dev": {},
-    "autoload": {
-        "psr-4": {
-            "BristolSU\\ApiClient\\": "src/"
-        },
-        "classmap": []
+    "classmap": []
+  },
+  "minimum-stability": "dev",
+  "autoload-dev": {},
+  "repositories": [
+    {
+      "type": "path",
+      "url": "./../api-client-toolkit"
     },
-    "autoload-dev": {},
-    "repositories": [
-    	{
-    	    "type": "path",
-    	    "url": "./../api-client-toolkit"
-    	}
-    ]
+    {
+      "type": "path",
+      "url": "./../api-client-modules/control-api-client"
+    }
+  ]
 }
