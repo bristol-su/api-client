@@ -5,6 +5,7 @@ namespace BristolSU\ApiClient;
 
 use BristolSU\ApiToolkit\Contracts\Authenticator;
 use BristolSU\ApiToolkit\Contracts\HttpClient;
+use GuzzleHttp\Exception\ServerException;
 
 class PassportAuthenticator implements Authenticator
 {
@@ -38,7 +39,7 @@ class PassportAuthenticator implements Authenticator
 
     public function authenticate(HttpClient $client): HttpClient
     {
-        $client->addBody([
+        $client->config()->addBody([
           'grant_type' => 'password',
           'client_id' => $this->clientId,
           'client_secret' => $this->clientSecret,
@@ -46,7 +47,12 @@ class PassportAuthenticator implements Authenticator
           'password' => $this->password,
           'scope' => '',
         ]);
-        var_dump($client->request('s', 's'));
+        try {
+            var_dump($client->post('oauth/token')->getBody()->getContents());
+        }
+        catch (ServerException $e) {
+            var_dump($e->getResponse()->getBody()->getContents());
+        }
         die();
         return $client;
     }

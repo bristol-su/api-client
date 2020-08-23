@@ -15,66 +15,79 @@ class GuzzleHttpClient implements \BristolSU\ApiToolkit\Contracts\HttpClient
     private $client;
 
     /**
-     * @var static
+     * @var \BristolSU\ApiToolkit\Contracts\HttpClientConfig
      */
-    static $base;
+    private $globalConfig;
+
+    /**
+     * @var \BristolSU\ApiToolkit\Contracts\HttpClientConfig
+     */
+    private $config;
 
     /**
      * GuzzleHttpClient constructor.
      * @param ClientInterface $client
      */
-    public function __construct(ClientInterface $client)
+    public function __construct(ClientInterface $client, \BristolSU\ApiToolkit\Contracts\HttpClientConfig $config)
     {
-        static::$base = $this;
         $this->client = $client;
+        $this->config = $config;
+        $this->globalConfig = clone $config;
     }
 
-    private $headers = [];
-    /**
-     * @var string
-     */
-
-    private $baseUrl;
-
-    private $body = [];
-
-    public function base()
+    public function global(): \BristolSU\ApiToolkit\Contracts\HttpClientConfig
     {
-        return static::$base;
+        return $this->globalConfig;
     }
 
-    public function addHeader(string $key, string $value): void
+    public function options(): array
     {
-        $this->headers[$key] = $value;
-    }
-
-    public function setBaseUrl(string $baseUrl): void
-    {
-        $this->baseUrl = $baseUrl;
-    }
-
-    public function addBody(array $body): void
-    {
-        $this->body = array_merge(
-          $this->body, $body
+        return array_merge(
+          $this->globalConfig->toArray(),
+          $this->config->toArray(),
+          ['verify' => false]
         );
     }
 
-    public function addBodyElement(string $key, $element): void
+    public function config(): \BristolSU\ApiToolkit\Contracts\HttpClientConfig
     {
-        $this->body[$key] = $element;
+        return $this->config;
     }
 
-    public function sendRequest(RequestInterface $request): ResponseInterface
+    public function __call($name, $arguments)
     {
-        return $this->client->sendRequest($request);
+        return $this->config->{$name}($arguments);
     }
 
-    public function request(string $method, string $uri)
+    public function request(string $method, string $uri): ResponseInterface
     {
-        var_dump(static::$base, $this);
-        die();
-        $this->client->request($method, $uri);
+        $response = $this->client->request($method, $uri, $this->options());
+        $this->config->clear();
+        return $response;
     }
 
+    public function post(string $uri): ResponseInterface
+    {
+        return $this->request('post', $uri);
+    }
+
+    public function get(string $uri): ResponseInterface
+    {
+        return $this->request('get', $uri);
+    }
+
+    public function patch(string $uri): ResponseInterface
+    {
+        return $this->request('patch', $uri);
+    }
+
+    public function delete(string $uri): ResponseInterface
+    {
+        return $this->request('delete', $uri);
+    }
+
+    public function put(string $uri): ResponseInterface
+    {
+        return $this->request('put', $uri);
+    }
 }
