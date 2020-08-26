@@ -3,7 +3,7 @@
 namespace BristolSU\ApiClient;
 
 use BristolSU\ApiClient\Contracts\ApiClient;
-use BristolSU\ApiToolkit\Contracts\ApiClientManager;
+use BristolSU\ApiToolkit\ApiClientManager;
 use BristolSU\ApiToolkit\Contracts\ClientResourceGroupFactory;
 use BristolSU\ApiToolkit\Contracts\ClientResourceGroup;
 

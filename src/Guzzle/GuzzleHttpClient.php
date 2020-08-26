@@ -1,7 +1,8 @@
 <?php
 
-namespace BristolSU\ApiClient;
+namespace BristolSU\ApiClient\Guzzle;
 
+use BristolSU\ApiToolkit\HttpClientConfig;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -15,12 +16,12 @@ class GuzzleHttpClient implements \BristolSU\ApiToolkit\Contracts\HttpClient
     private $client;
 
     /**
-     * @var \BristolSU\ApiToolkit\Contracts\HttpClientConfig
+     * @var HttpClientConfig
      */
     private $globalConfig;
 
     /**
-     * @var \BristolSU\ApiToolkit\Contracts\HttpClientConfig
+     * @var HttpClientConfig
      */
     private $config;
 
@@ -28,30 +29,35 @@ class GuzzleHttpClient implements \BristolSU\ApiToolkit\Contracts\HttpClient
      * GuzzleHttpClient constructor.
      * @param ClientInterface $client
      */
-    public function __construct(ClientInterface $client, \BristolSU\ApiToolkit\Contracts\HttpClientConfig $config)
+    public function __construct(ClientInterface $client)
     {
         $this->client = $client;
-        $this->config = $config;
-        $this->globalConfig = clone $config;
+        $this->config = new HttpClientConfig;
+        $this->globalConfig = new HttpClientConfig;
     }
 
-    public function global(): \BristolSU\ApiToolkit\Contracts\HttpClientConfig
+    public function global(): \BristolSU\ApiToolkit\HttpClientConfig
     {
         return $this->globalConfig;
     }
 
     public function options(): array
     {
-        return array_merge(
-          $this->globalConfig->toArray(),
-          $this->config->toArray(),
-          ['verify' => false]
+        return ConfigTransformer::transform(
+          $this->mergedConfig()
         );
     }
 
-    public function config(): \BristolSU\ApiToolkit\Contracts\HttpClientConfig
+    public function config(): \BristolSU\ApiToolkit\HttpClientConfig
     {
         return $this->config;
+    }
+
+    public function mergedConfig(): HttpClientConfig
+    {
+        return $this->global()->merge(
+          $this->config()
+        );
     }
 
     public function __call($name, $arguments)

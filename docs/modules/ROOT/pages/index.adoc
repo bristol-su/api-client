@@ -1,3 +1,124 @@
 = Introduction
 
-An intro to the interfaces
+[WARNING]
+====
+This package is still in active development, and is likely to change before release.
+====
+
+To make connecting to the portal API as easy as possible, we provide a PHP client to help you connect and consume the API. 
+
+## Installation
+
+To install the client, you will need to use composer. Run
+[source,shell]
+----
+composer require bristol-su/api-client
+----
+
+Unless you plan on customising the client, we also recommend you run:
+
+[source,shell]
+----
+# Allows HTTP requests to be cached
+composer require symfony/cache
+
+# Client for making HTTP requests
+composer require guzzlehttp/guzzle
+----
+
+
+## Setup
+
+### Include the clients
+
+By default, the API client won't include any API calls you can use. Each module registers its own client, which when pulled in through composer allow you to consume that modules API.
+
+Control is registered in the client as a module. To use the control (user management system) API, run
+
+[source,shell]
+----
+composer require bristol-su/control-api-client
+----
+
+### Create a Client
+
+If you don't use Laravel, you will need to construct the client yourself. The following can be copied and pasted (assuming you install the above dependencies), though you should change the authentication information and the base url.
+
+
+====
+[source,php]
+----
+// Create a cache store <1>
+$cache = new \Symfony\Component\Cache\Psr16Cache( <2>
+  new \Symfony\Component\Cache\Adapter\FilesystemAdapter() <3>
+);
+
+// Set up the authentication. <4>
+$authenticator = new \BristolSU\ApiClient\Authentication\PassportPasswordAuthenticator(
+  client-id,
+  'client-secret',
+  'example@example.com',
+  'my-password',
+  new \BristolSU\ApiClient\Authentication\CacheAccessTokenStore($cache) <5>
+);
+
+// Create the HttpClient and set defaults <6>
+$httpClient = new BristolSU\ApiClient\Cache\CacheHttpClient( <7>
+  \BristolSU\ApiClient\Guzzle\GuzzleHttpClientFactory::create('https://portal.local'), <8>
+  $cache
+);
+$httpClient->config()->addHeader('Content-Type', 'application/json'); <9>
+$httpClient->config()->addHeader('Accept', 'application/json');
+
+// Create the Client itself
+$client = \BristolSU\ApiClient\ClientFactory::create( <10>
+  [
+    BristolSU\ApiClientImplementation\Control\Client::class <11>
+  ],
+  $httpClient, <12>
+  $authenticator <13>
+);
+----
+<1> A cache store is a way for us to interact with the cache
+<2> This class converts a symfony cache to a psr 16 cache which the client needs
+<3> This is a symfony cache that uses the local file system. Other caches, e.g. redis, can be found online.
+<4> The authentication handles authenticating with the portal. The PassportPasswordAuthenticator is the default. Your client ID and secret will be given to you.
+<5> This is a simple class to store and retrieve access tokens. This example uses the cache, so takes the cache as a parameter.
+<6> The HTTPClient actually makes the http requests
+<7> This is a cached client to store and retrieve responses
+<8> This creates a guzzle client with the given base url
+<9> Set the content type to be json by default.
+<10> Create an actual client you can use
+<11> Register all modules you want to connect to. This just registers the control client.
+<12> Pass in the http client you created earlier
+<13> Pass in the authenticator you created earlier
+====
+
+## Using the client
+
+You can now go ahead and actually use the client. Assuming the client is saved in the ```$client``` variable, you first call the method for the module (e.g. control()). Next you need to call a resource (e.g. group()). Finally, you call a method (e.g. getAll()). See individual documentation for available methods.
+
+[source,php]
+----
+$group = $client->control()->group()->getById(1)->getBody();
+echo $group->id // 1
+echo $group->data->name // Group Name
+----
+
+### Pagination
+
+If you retrieve, e.g. all groups, we will include pagination by default. You may use the ```page()``` and ```perPage()``` functions to control this.
+
+[source,php]
+----
+$response = $client->control()->group()->page(1)->perPage(10)->getAll();
+
+echo $response->current_page // 1
+echo $response->per_page // 10
+echo $response->last_page // 5
+echo $response->total_rows // 48
+
+echo $response->getBody() // Array of Groups
+echo $response->getBody()[0]->id // First group ID
+----
+

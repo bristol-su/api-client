@@ -10,9 +10,13 @@
   ],
   "require": {
     "php": "^7.2",
-    "bristol-su/api-client-toolkit": "dev-initial-setup",
-    "bristol-su/control-api-client": "dev-initial-setup",
-    "guzzlehttp/guzzle": "^7.0"
+    "bristol-su/api-client-toolkit": "dev-develop",
+    "ext-json": "*"
+  },
+  "suggest": {
+    "symfony/cache": "Allows for psr-16 compliant caching of HTTP results",
+    "guzzlehttp/guzzle": "A psr compliant HTTP client for making requests",
+    "bristol-su/control-api-client": "Extension to the API client for making requests to Control"
   },
   "require-dev": {},
   "autoload": {
@@ -21,16 +25,5 @@
     },
     "classmap": []
   },
-  "minimum-stability": "dev",
-  "autoload-dev": {},
-  "repositories": [
-    {
-      "type": "path",
-      "url": "./../api-client-toolkit"
-    },
-    {
-      "type": "path",
-      "url": "./../api-client-modules/control-api-client"
-    }
-  ]
+  "autoload-dev": {}
 }

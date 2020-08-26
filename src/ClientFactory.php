@@ -2,7 +2,7 @@
 
 namespace BristolSU\ApiClient;
 
-use BristolSU\ApiToolkit\Contracts\ApiClientManager;
+use BristolSU\ApiToolkit\ApiClientManager;
 use BristolSU\ApiToolkit\Contracts\HttpClient;
 use BristolSU\ApiToolkit\Contracts\Authenticator;
 
