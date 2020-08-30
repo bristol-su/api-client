@@ -7,53 +7,62 @@ namespace BristolSU\ApiClient\Authentication;
 use BristolSU\ApiClient\Contracts\AccessTokenStore;
 use DateTime;
 
-class NullTokenStore implements AccessTokenStore
+class ArrayAccessTokenStore implements AccessTokenStore
 {
+
+    private $accessToken = null;
+
+    private $refreshToken = null;
+
+    private $expiresAt = null;
 
     public function hasAccessToken(): bool
     {
-        return false;
+        return $this->accessToken !== null;
     }
 
     public function hasRefreshToken(): bool
     {
-        return false;
+        return $this->refreshToken !== null;
     }
 
     public function hasExpiresAt(): bool
     {
-        return false;
+        return $this->expiresAt !== null;
     }
 
     public function hasExpired(): bool
     {
-        return true;
+        return new DateTime() > $this->getExpiresAt();
     }
 
     public function setAccessToken(string $accessToken)
     {
+        $this->accessToken = $accessToken;
     }
 
     public function setRefreshToken(string $refreshToken)
     {
+        $this->refreshToken = $refreshToken;
     }
 
     public function setExpiresAt(DateTime $expiresAt)
     {
+        $this->expiresAt = $expiresAt;
     }
 
     public function getAccessToken(): string
     {
-        return '';
+        return $this->accessToken;
     }
 
     public function getRefreshToken(): string
     {
-        return '';
+        return $this->refreshToken;
     }
 
     public function getExpiresAt(): DateTime
     {
-        return new DateTime();
+        return $this->expiresAt;
     }
 }
