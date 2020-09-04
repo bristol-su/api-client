@@ -17,7 +17,7 @@
     "symfony/cache": "Allows for psr-16 compliant caching of HTTP results",
     "guzzlehttp/guzzle": "A psr compliant HTTP client for making requests",
     "bristol-su/control-api-client": "Extension to the API client for making requests to Control",
-    "TristanPWarren/FlyerlessClubManagementApiClient": "A Flyerless Api Client extension to allow access to club details"
+    "flyerless/flyerless-club-management-api-client": "A Flyerless Api Client extension to allow access to club details"
   },
   "require-dev": {},
   "autoload": {
